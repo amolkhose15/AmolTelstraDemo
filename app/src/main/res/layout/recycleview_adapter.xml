@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+
+        <RelativeLayout
+            android:padding="@dimen/size7dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/TxtTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="This is a Title" />
+
+            <TextView
+                android:id="@+id/TxtDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/TxtTitle"
+                android:layout_marginTop="@dimen/size7dp"
+                android:layout_toLeftOf="@+id/ImageViewData"
+                android:gravity="start"
+                android:text="jfhgjkfdhgjdfhglkfdhg jfdhgjkhdfjkghdflghdflg" />
+
+            <ImageView
+                android:src="@mipmap/ic_launcher"
+                android:id="@+id/ImageViewData"
+                android:scaleType="fitXY"
+                android:layout_width="100dp"
+                android:layout_height="60dp"
+                android:layout_below="@+id/TxtTitle"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="@dimen/size7dp" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>
