@@ -15,20 +15,24 @@
             android:layout_height="wrap_content">
 
             <TextView
+                android:padding="@dimen/size5dp"
                 android:id="@+id/TxtTitle"
+                android:textSize="@dimen/size16sp"
+                android:textStyle="bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="This is a Title" />
 
             <TextView
+                android:padding="@dimen/size5dp"
                 android:id="@+id/TxtDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/TxtTitle"
-                android:layout_marginTop="@dimen/size7dp"
                 android:layout_toLeftOf="@+id/ImageViewData"
                 android:gravity="start"
-                android:text="jfhgjkfdhgjdfhglkfdhg jfdhgjkhdfjkghdflghdflg" />
+                android:textSize="@dimen/size14sp"
+                android:text="jfhgjkfdhgjdfhglkfdhg" />
 
             <ImageView
                 android:src="@mipmap/ic_launcher"
@@ -38,7 +42,7 @@
                 android:layout_height="60dp"
                 android:layout_below="@+id/TxtTitle"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="@dimen/size7dp" />
+                android:layout_marginTop="@dimen/size5dp" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

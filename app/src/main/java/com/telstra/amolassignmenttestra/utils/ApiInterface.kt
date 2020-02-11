@@ -1,7 +1,6 @@
 package com.telstra.amolassignmenttestra.utils
 
-import com.telstra.amolassignmenttestra.pojo.ApiRespose
-import okhttp3.ResponseBody
+import com.telstra.amolassignmenttestra.model.pojo.ApiRespose
 import retrofit2.Call
 import retrofit2.http.GET
 

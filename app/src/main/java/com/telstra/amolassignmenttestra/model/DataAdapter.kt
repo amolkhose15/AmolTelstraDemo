@@ -3,24 +3,25 @@ package com.telstra.amolassignmenttestra.model
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.squareup.picasso.Picasso
 import com.telstra.amolassignmenttestra.R
-import com.telstra.amolassignmenttestra.pojo.ApiData
+import com.telstra.amolassignmenttestra.room.AppEntity
 import kotlinx.android.synthetic.main.recycleview_adapter.view.*
 
 
-class DataAdapter(mContext: Context, dataModel: List<ApiData>, titlee: Title) :
+class DataAdapter(mContext: Context, dataModel: List<AppEntity>, titlee: Title) :
     RecyclerView.Adapter<DataAdapter.ViewHolder>() {
     var mContext: Context
-    var dataModel: List<ApiData>
+    var dataModel: List<AppEntity>
     var title: Title
 
-    public interface Title {
+    interface Title {
         fun gettitle(title: String)
 
     }
@@ -52,22 +53,18 @@ class DataAdapter(mContext: Context, dataModel: List<ApiData>, titlee: Title) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.mTxtTitle.text = dataModel.get(position).getTitle()
-        holder.mTxtDescription.text = dataModel.get(position).getDescription()
+        holder.mTxtTitle.text = dataModel[position].title
+        holder.mTxtDescription.text = dataModel[position].description
 
-        Picasso.with(mContext).load(dataModel.get(position).getImageHref()).
-//            publiclaceholder(R.drawable.ic_launcher_background).
-//            error(R.drawable.ic_launcher_background).noFade().
-            into(holder.mImageViewData);
-
-//        Glide.with(mContext)
-//            .load(dataModel.get(position).getImageHref())
-//            .into(holder.mImageViewData)
-
-
-        if (dataModel.get(position).getTitle() != null) {
-            title.gettitle(dataModel.get(position).getTitle()!!)
+        if (dataModel[position].imageHref.isEmpty()) {
+            holder.mImageViewData.visibility = GONE
+        } else {
+            Glide.with(mContext).load(dataModel[position].imageHref).into(holder.mImageViewData)
+            holder.mImageViewData.visibility = VISIBLE
         }
+
+
+        title.gettitle(dataModel.get(position).title)
 
 
     }

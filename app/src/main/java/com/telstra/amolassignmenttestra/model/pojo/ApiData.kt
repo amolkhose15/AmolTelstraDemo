@@ -1,4 +1,4 @@
-package com.telstra.amolassignmenttestra.pojo
+package com.telstra.amolassignmenttestra.model.pojo
 
 import com.google.gson.annotations.Expose
 
@@ -8,12 +8,15 @@ import com.google.gson.annotations.SerializedName
 
 
 class ApiData {
+
     @SerializedName("title")
     @Expose
     private var title: String? = null
+
     @SerializedName("description")
     @Expose
     private var description: String? = null
+
     @SerializedName("imageHref")
     @Expose
     private var imageHref: String? = null

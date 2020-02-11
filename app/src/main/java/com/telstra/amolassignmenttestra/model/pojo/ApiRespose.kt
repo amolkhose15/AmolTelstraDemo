@@ -1,4 +1,4 @@
-package com.telstra.amolassignmenttestra.pojo
+package com.telstra.amolassignmenttestra.model.pojo
 
 import com.google.gson.annotations.Expose
 
