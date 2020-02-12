@@ -1,51 +1,42 @@
 package com.telstra.amolassignmenttestra.view
 
-import android.app.ProgressDialog
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.telstra.amolassignmenttestra.R
-import com.telstra.amolassignmenttestra.model.DataAdapter
-import com.telstra.amolassignmenttestra.model.pojo.ApiRespose
+import com.telstra.amolassignmenttestra.adapter.DataAdapter
+import com.telstra.amolassignmenttestra.databinding.ActivityMainBinding
 import com.telstra.amolassignmenttestra.room.AppDB
 import com.telstra.amolassignmenttestra.room.AppEntity
-import com.telstra.amolassignmenttestra.utils.APIClient
-import com.telstra.amolassignmenttestra.utils.ApiInterface
-import kotlinx.android.synthetic.main.frgment_main.view.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.telstra.amolassignmenttestra.viewmodel.MainViewModel
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 
-class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, DataAdapter.Title {
+class MainFragment : Fragment() {
 
-    lateinit var adapter: DataAdapter
-    lateinit var mContext: Context
-    lateinit var mRecycleview: RecyclerView
-    lateinit var mswapRefreshLayout: SwipeRefreshLayout
-
+    private lateinit var appStoreHomeViewModel: MainViewModel
+    lateinit var binding: ActivityMainBinding
+    var dataList: List<AppEntity> = ArrayList()
     private var mListener: OnFragmentInteractionListener? = null
 
     interface OnFragmentInteractionListener {
         fun onFragmentInteraction(uri: String?)
     }
-
-
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
             mListener = context
         } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException(context!!.toString() + " must implement ")
         }
     }
 
@@ -59,40 +50,59 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, DataAdapt
         savedInstanceState: Bundle?
     ): View? {
 
-        var view: View = layoutInflater.inflate(R.layout.frgment_main, container, false)
-        bindview(view)
-        return view
+        binding = DataBindingUtil.inflate(inflater, R.layout.activity_main, container, false)
+        appStoreHomeViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        binding.mainModel = appStoreHomeViewModel
+
+        setRecyclerView(dataList)
+        subscribeDataCallBack()
+        return binding.root
+    }
+
+    private fun subscribeDataCallBack() {
+
+        appStoreHomeViewModel.getProjectList()?.observe(this, Observer<List<AppEntity>> {
+            mListener!!.onFragmentInteraction(appStoreHomeViewModel.actionbarName)
+            if (it != null) {
+                setadapter(it!!)
+                binding.swapRefreshLayout.isRefreshing = false
+            }
+        })
+
     }
 
 
-    private fun bindview(view: View) {
-        mContext = context!!
-        mRecycleview = view.Recycleview
-        mswapRefreshLayout = view.swapRefreshLayout
-        mRecycleview.layoutManager = LinearLayoutManager(mContext)
-        mswapRefreshLayout.setOnRefreshListener(this)
+    private fun setRecyclerView(dataList: List<AppEntity>) {
+        val datalayoutManager = LinearLayoutManager(context)
+        datalayoutManager.orientation = LinearLayoutManager.VERTICAL
+        binding.root.Recycleview.layoutManager = datalayoutManager
+        binding.swapRefreshLayout.isRefreshing = true
+        binding.swapRefreshLayout.setOnRefreshListener {
+            if (isNetwork(context!!)) {
+                subscribeDataCallBack()
+            } else {
+
+                setadapter(
+                    Room.databaseBuilder(context!!, AppDB::class.java, "TELESTSRA")
+                        .allowMainThreadQueries()
+                        .build().appdeo().getallData()
+                )
 
 
-
-
-        if (isNetwork(mContext)) {
-            callAPI()
-        } else {
-            val toast = Toast.makeText(mContext, "Network Not Available", Toast.LENGTH_LONG)
-            toast.show()
-
-
-            var list = Room.databaseBuilder(mContext, AppDB::class.java, "TELESTSRA")
-                .allowMainThreadQueries()
-                .build().appdeo().getAllBooks()
-            if (list.size > 0) {
-                callAdapter(list)
+                binding.swapRefreshLayout.isRefreshing = false
             }
-
-
         }
+        setadapter(dataList)
 
 
+    }
+
+    private fun setadapter(dataList: List<AppEntity>) {
+        binding.Recycleview.adapter =
+            DataAdapter(
+                context!!,
+                dataList
+            )
     }
 
     fun isNetwork(context: Context): Boolean {
@@ -100,75 +110,6 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, DataAdapt
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
         return networkInfo != null && networkInfo.isConnected
-    }
-
-
-    private fun callAPI() {
-        val mProgressDialog = ProgressDialog(activity)
-        mProgressDialog.setMessage("Loading...")
-        mProgressDialog.show()
-        var apiServices = APIClient.client.create(ApiInterface::class.java)
-        val call = apiServices.getData()
-
-        call.enqueue(object : Callback<ApiRespose> {
-            override fun onResponse(call: Call<ApiRespose>, response: Response<ApiRespose>) {
-                if (mProgressDialog.isShowing) {
-                    mProgressDialog.dismiss()
-                }
-
-                Room.databaseBuilder(mContext, AppDB::class.java, "TELESTSRA")
-                    .allowMainThreadQueries()
-                    .build().appdeo().delete()
-                mListener!!.onFragmentInteraction(response.body()!!.getTitle())
-                for (apidata in response.body()!!.getRows()!!) {
-                    Room.databaseBuilder(mContext, AppDB::class.java, "TELESTSRA")
-                        .allowMainThreadQueries()
-                        .build().appdeo().saveBooks(
-                            AppEntity(
-                                title = apidata!!.getTitle() ?: "",
-                                description = apidata!!.getDescription() ?: "",
-                                imageHref = apidata!!.getImageHref() ?: ""
-                            )
-                        )
-                }
-
-                callAdapter(
-                    Room.databaseBuilder(mContext, AppDB::class.java, "TELESTSRA")
-                        .allowMainThreadQueries()
-                        .build().appdeo().getAllBooks()
-                )
-                mswapRefreshLayout.isRefreshing = false
-            }
-
-
-            override fun onFailure(call: Call<ApiRespose>?, t: Throwable?) {
-                if (mProgressDialog.isShowing) {
-                    mProgressDialog.dismiss()
-                }
-
-            }
-        })
-
-    }
-
-    private fun callAdapter(list: List<AppEntity>) {
-        adapter = DataAdapter(
-            mContext,
-            list,
-            this@MainFragment
-        )
-        mRecycleview.adapter = adapter;
-
-    }
-    override fun onRefresh() {
-        if (isNetwork(mContext)) {
-            callAPI()
-        } else {
-            mswapRefreshLayout.isRefreshing = false
-        }
-    }
-
-    override fun gettitle(title: String) {
     }
 
 

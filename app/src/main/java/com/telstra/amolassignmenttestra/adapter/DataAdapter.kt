@@ -1,4 +1,4 @@
-package com.telstra.amolassignmenttestra.model
+package com.telstra.amolassignmenttestra.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -15,25 +15,21 @@ import com.telstra.amolassignmenttestra.room.AppEntity
 import kotlinx.android.synthetic.main.recycleview_adapter.view.*
 
 
-class DataAdapter(mContext: Context, dataModel: List<AppEntity>, titlee: Title) :
+class DataAdapter(mContext: Context, dataModel: List<AppEntity>) :
     RecyclerView.Adapter<DataAdapter.ViewHolder>() {
     var mContext: Context
     var dataModel: List<AppEntity>
-    var title: Title
 
-    interface Title {
-        fun gettitle(title: String)
-
-    }
 
 
     init {
         this.mContext = mContext
         this.dataModel = dataModel
-        this.title = titlee
-    }
+       }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+
         val mTxtTitle: TextView = view.TxtTitle
         val mTxtDescription: TextView = view.TxtDescription
         val mImageViewData: ImageView = view.ImageViewData
@@ -44,7 +40,9 @@ class DataAdapter(mContext: Context, dataModel: List<AppEntity>, titlee: Title) 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         var view =
             LayoutInflater.from(parent.context).inflate(R.layout.recycleview_adapter, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(
+            view
+        )
     }
 
     override fun getItemCount(): Int {
@@ -64,9 +62,8 @@ class DataAdapter(mContext: Context, dataModel: List<AppEntity>, titlee: Title) 
         }
 
 
-        title.gettitle(dataModel.get(position).title)
-
-
     }
 
+
 }
+

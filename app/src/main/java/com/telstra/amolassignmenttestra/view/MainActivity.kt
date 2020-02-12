@@ -4,12 +4,15 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.telstra.amolassignmenttestra.R
 
+
 class MainActivity : AppCompatActivity(),MainFragment.OnFragmentInteractionListener {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_actvitymain)
         CallFragment()
     }
+
 
     private fun CallFragment() {
         supportActionBar!!.title="Telestra"
@@ -20,6 +23,7 @@ class MainActivity : AppCompatActivity(),MainFragment.OnFragmentInteractionListe
 
     override fun onFragmentInteraction(uri: String?) {
         supportActionBar!!.title=uri
+
     }
 
 

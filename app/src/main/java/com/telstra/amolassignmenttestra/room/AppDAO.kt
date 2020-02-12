@@ -8,10 +8,10 @@ import androidx.room.Query
 @Dao
 interface AppDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveBooks(app: AppEntity)
+    fun insertData(app: AppEntity)
 
     @Query(value = "Select * from AppEntity")
-    fun getAllBooks(): List<AppEntity>
+    fun getallData(): List<AppEntity>
 
     @Query("DELETE FROM AppENTITY")
     fun delete()

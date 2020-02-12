@@ -19,4 +19,5 @@ data class AppEntity(
 
     @ColumnInfo(name = "imageHref")
     var imageHref: String = ""
+
 )
