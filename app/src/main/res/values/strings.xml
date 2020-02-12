@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">AmolAssignmentTestra</string>
+    <string name="actionbarname">Telestra</string>
+    <string name="implemtListener">must implement</string>
+    <string name="networkMessage">Network Not Available</string>
 </resources>

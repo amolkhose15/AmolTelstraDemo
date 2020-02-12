@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity(),MainFragment.OnFragmentInteractionListe
 
 
     private fun CallFragment() {
-        supportActionBar!!.title="Telestra"
+        supportActionBar!!.title = this.getString(R.string.actionbarname)
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frgment, MainFragment()!!)
         fragmentTransaction.commit()

@@ -23,10 +23,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getProjectList(): LiveData<List<AppEntity>>? {
 
-        var apiServices = APIClient.client.create(ApiInterface::class.java)
-        val call = apiServices.getData()
-
-        call.enqueue(object : Callback<ApiRespose> {
+        APIClient.client.create(ApiInterface::class.java).getData()
+            .enqueue(object : Callback<ApiRespose> {
             override fun onResponse(call: Call<ApiRespose>, response: Response<ApiRespose>) {
                 actionbarName = response.body()!!.getTitle()!!
                 appDB.delete()
