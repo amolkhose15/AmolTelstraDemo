@@ -10,7 +10,6 @@ import com.telstra.amolassignmenttestra.R
 
 
 class ApiData {
-
     @SerializedName("title")
     @Expose
     private var title: String? = null
