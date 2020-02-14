@@ -10,9 +10,11 @@ import com.telstra.amolassignmenttestra.R
 abstract class AppDB : RoomDatabase() {
     abstract fun appdeo(): AppDAO
 
+
+//    Create a instance for Database Class
     companion object {
-        fun getInstance(context: Context): AppDB =
-            Room.databaseBuilder(context.applicationContext, AppDB::class.java,context.getString(R.string.telstra)).allowMainThreadQueries().build()
+        fun getInstance(context: Context): AppDAO =
+            Room.databaseBuilder(context.applicationContext, AppDB::class.java,context.getString(R.string.telstra)).allowMainThreadQueries().build().appdeo()
     }
 
 }

@@ -14,6 +14,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.telstra.amolassignmenttestra.R
 import com.telstra.amolassignmenttestra.adapter.DataAdapter
 import com.telstra.amolassignmenttestra.databinding.ActivityMainBinding
+import com.telstra.amolassignmenttestra.room.AppDAO
 import com.telstra.amolassignmenttestra.room.AppDB
 import com.telstra.amolassignmenttestra.room.AppEntity
 import com.telstra.amolassignmenttestra.viewmodel.MainViewModel
@@ -25,6 +26,7 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
     private lateinit var appStoreHomeViewModel: MainViewModel
     lateinit var binding: ActivityMainBinding
     lateinit var adapter: DataAdapter
+    lateinit var appDao: AppDAO
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,6 +38,7 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
 
         binding.mainModel = appStoreHomeViewModel
         appStoreHomeViewModel.apistatus(this)
+        appDao = AppDB.getInstance(context!!)
         bindview()
         subscribeDataCallBack()
         return binding.root
@@ -69,12 +72,12 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
         binding.root.Recycleview.layoutManager = datalayoutManager
         binding.swapRefreshLayout.isRefreshing = true
         binding.swapRefreshLayout.setOnRefreshListener(this)
-        adapter = DataAdapter(context!!, AppDB.getInstance(context!!).appdeo().getallData())
+        adapter = DataAdapter(context!!, appDao.getallData())
 
 
         // Check Network
         if (isNetwork(context!!)) {
-            if (AppDB.getInstance(context!!).appdeo().getallData().isEmpty()) {
+            if (appDao.getallData().isEmpty()) {
                 appStoreHomeViewModel.getProjectList()
             }
         } else {
@@ -90,7 +93,7 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 (activity as MainActivity).supportActionBar?.title =
-                    AppDB.getInstance(context!!).appdeo().getallData()
+                    appDao.getallData()
                         .get(datalayoutManager.findFirstVisibleItemPosition()).title
             }
         })
@@ -122,15 +125,15 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
         if (isNetwork(context!!)) {
             subscribeDataCallBack()
         } else {
-            binding.Recycleview.adapter = adapter
             binding.swapRefreshLayout.isRefreshing = false
             callToast(this.getString(R.string.networkMessage))
         }
     }
 
     override fun apistatus(b: List<AppEntity>) {
-        binding.swapRefreshLayout.isRefreshing = false
         adapter.updateData(b)
+        binding.swapRefreshLayout.isRefreshing = false
+
     }
 
 

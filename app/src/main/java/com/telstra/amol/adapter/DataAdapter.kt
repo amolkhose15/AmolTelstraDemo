@@ -47,7 +47,6 @@ class DataAdapter(mContext: Context, dataModel: List<AppEntity>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.mTxtTitle.text = dataModel[position].title
         holder.mTxtDescription.text = dataModel[position].description
-
         if (dataModel[position].imageHref.isEmpty()) {
             holder.mImageViewData.visibility = GONE
         } else {
@@ -58,6 +57,7 @@ class DataAdapter(mContext: Context, dataModel: List<AppEntity>) :
 
     }
 
+    // notifyData list
     fun updateData(getallData: List<AppEntity>) {
         this.dataModel = getallData;
         notifyDataSetChanged()

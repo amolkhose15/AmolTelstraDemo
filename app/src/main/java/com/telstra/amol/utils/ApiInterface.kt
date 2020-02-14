@@ -6,6 +6,7 @@ import retrofit2.http.GET
 
 
 interface ApiInterface {
+    //    Base USL
     @GET("s/2iodh4vg0eortkl/facts.json")
     fun getData(): Call<ApiRespose>
 

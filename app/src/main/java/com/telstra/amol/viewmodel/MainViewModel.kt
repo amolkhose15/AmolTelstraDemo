@@ -60,14 +60,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun insertOrUpdate(item: List<AppEntity>) {
-        appDB.runInTransaction {
-            if (appDB.appdeo().getallData().isEmpty()) {
-                appDB.appdeo().insertData(item)
-            } else {
-                appDB.appdeo().update(item)
 
-            }
+        if (appDB.getallData().isEmpty()) {
+            appDB.insertData(item)
+            } else {
+            appDB.update(item)
         }
-        apiResponse.apistatus(appDB.appdeo().getallData())
+        apiResponse.apistatus(appDB.getallData())
     }
 }
