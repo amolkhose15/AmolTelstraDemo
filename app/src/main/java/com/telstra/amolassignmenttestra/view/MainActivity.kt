@@ -5,26 +5,20 @@ import androidx.appcompat.app.AppCompatActivity
 import com.telstra.amolassignmenttestra.R
 
 
-class MainActivity : AppCompatActivity(),MainFragment.OnFragmentInteractionListener {
-
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_actvitymain)
-        CallFragment()
+        if (savedInstanceState == null) {
+            CallFragment()
+        }
     }
 
-
+    // attached the Fragment
     private fun CallFragment() {
-        supportActionBar!!.title = this.getString(R.string.actionbarname)
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frgment, MainFragment()!!)
         fragmentTransaction.commit()
     }
-
-    override fun onFragmentInteraction(uri: String?) {
-        supportActionBar!!.title=uri
-
-    }
-
 
 }

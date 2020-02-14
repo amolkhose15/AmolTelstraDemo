@@ -2,9 +2,6 @@ package com.telstra.amolassignmenttestra.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.room.Room
 import com.telstra.amolassignmenttestra.model.pojo.ApiRespose
 import com.telstra.amolassignmenttestra.room.AppDB
 import com.telstra.amolassignmenttestra.room.AppEntity
@@ -14,40 +11,63 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    private val mutablePostList: MutableLiveData<List<AppEntity>> = MutableLiveData()
-    lateinit var actionbarName: String
-    var appDB = Room.databaseBuilder(getApplication(), AppDB::class.java, "TELESTSRA")
-        .allowMainThreadQueries()
-        .build().appdeo()
 
-    fun getProjectList(): LiveData<List<AppEntity>>? {
+    var appDB = AppDB.getInstance(application)
+    var myList: MutableList<AppEntity> = mutableListOf<AppEntity>()
+    lateinit var apiResponse: APiResponse;
 
-        APIClient.client.create(ApiInterface::class.java).getData()
-            .enqueue(object : Callback<ApiRespose> {
-            override fun onResponse(call: Call<ApiRespose>, response: Response<ApiRespose>) {
-                actionbarName = response.body()!!.getTitle()!!
-                appDB.delete()
-                for (apidata in response.body()!!.getRows()!!) {
-                    appDB.insertData(
-                        AppEntity(
-                            title = apidata!!.getTitle() ?: "",
-                            description = apidata!!.getDescription() ?: "",
-                            imageHref = apidata!!.getImageHref() ?: ""
-                        )
-                    )
-                }
-                mutablePostList.postValue(appDB.getallData())
-            }
-
-            override fun onFailure(call: Call<ApiRespose>?, t: Throwable?) {
-
-            }
-        })
-
-        return mutablePostList
-
+    interface APiResponse {
+        fun apistatus(b: List<AppEntity>)
 
     }
 
+    fun apistatus(apiResponse: APiResponse) {
+        this.apiResponse = apiResponse;
+
+    }
+
+    //    API Call and Return the data
+    fun getProjectList(): List<AppEntity> {
+
+
+        APIClient.client.create(ApiInterface::class.java).getData()
+            .enqueue(object : Callback<ApiRespose> {
+                override fun onResponse(call: Call<ApiRespose>, response: Response<ApiRespose>) {
+
+
+                    for (apidata in response.body()!!.getRows()!!) {
+                        myList.add(
+                            AppEntity(
+                                title = apidata!!.getTitle() ?: "",
+                                description = apidata!!.getDescription() ?: "",
+                                imageHref = apidata!!.getImageHref() ?: ""
+                            )
+                        )
+
+                    }
+                    insertOrUpdate(myList)
+
+                }
+
+                override fun onFailure(call: Call<ApiRespose>?, t: Throwable?) {
+
+
+                }
+            })
+        return myList;
+    }
+
+    fun insertOrUpdate(item: List<AppEntity>) {
+        appDB.runInTransaction {
+            if (appDB.appdeo().getallData().isEmpty()) {
+                appDB.appdeo().insertData(item)
+            } else {
+                appDB.appdeo().update(item)
+
+            }
+        }
+        apiResponse.apistatus(appDB.appdeo().getallData())
+    }
 }

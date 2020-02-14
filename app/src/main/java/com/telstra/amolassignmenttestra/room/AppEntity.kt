@@ -14,6 +14,7 @@ data class AppEntity(
     @ColumnInfo(name = "title")
     var title: String = "",
 
+
     @ColumnInfo(name = "description")
     var description: String = "",
 

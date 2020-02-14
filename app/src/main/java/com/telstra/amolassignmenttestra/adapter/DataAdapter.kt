@@ -20,21 +20,15 @@ class DataAdapter(mContext: Context, dataModel: List<AppEntity>) :
     var mContext: Context
     var dataModel: List<AppEntity>
 
-
-
     init {
         this.mContext = mContext
         this.dataModel = dataModel
        }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-
         val mTxtTitle: TextView = view.TxtTitle
         val mTxtDescription: TextView = view.TxtDescription
         val mImageViewData: ImageView = view.ImageViewData
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -62,6 +56,11 @@ class DataAdapter(mContext: Context, dataModel: List<AppEntity>) :
         }
 
 
+    }
+
+    fun updateData(getallData: List<AppEntity>) {
+        this.dataModel = getallData;
+        notifyDataSetChanged()
     }
 
 

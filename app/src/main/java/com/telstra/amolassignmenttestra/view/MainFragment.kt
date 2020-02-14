@@ -3,16 +3,13 @@ package com.telstra.amolassignmenttestra.view
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.room.Room
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.telstra.amolassignmenttestra.R
 import com.telstra.amolassignmenttestra.adapter.DataAdapter
@@ -23,71 +20,84 @@ import com.telstra.amolassignmenttestra.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.view.*
 
 
-class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
-
+class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewModel.APiResponse {
+    lateinit var datalayoutManager: LinearLayoutManager
     private lateinit var appStoreHomeViewModel: MainViewModel
     lateinit var binding: ActivityMainBinding
-    private var mListener: OnFragmentInteractionListener? = null
-
-    interface OnFragmentInteractionListener {
-        fun onFragmentInteraction(uri: String?)
-    }
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context
-        } else {
-            throw RuntimeException(context!!.toString() + getContext()!!.getString(R.string.implemtListener))
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
-    }
+    lateinit var adapter: DataAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.activity_main, container, false)
         appStoreHomeViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        binding.mainModel = appStoreHomeViewModel
 
+        binding.mainModel = appStoreHomeViewModel
+        appStoreHomeViewModel.apistatus(this)
         bindview()
         subscribeDataCallBack()
         return binding.root
     }
 
-    private fun subscribeDataCallBack() {
+    // Create  button in action bar for refresh data
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater!!.inflate(R.menu.menu, menu);
+    }
 
-        appStoreHomeViewModel.getProjectList()?.observe(this, Observer<List<AppEntity>> {
-            mListener!!.onFragmentInteraction(appStoreHomeViewModel.actionbarName)
-            if (it != null) {
-                setadapter(it!!)
-
-            }
-        })
+    //    Refresh data on click refresh Button
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item!!.itemId == R.id.refreshmenu)
+            bindview()
+        subscribeDataCallBack()
+        return super.onOptionsItemSelected(item)
 
     }
 
+    // Call API and update the latest data
+    private fun subscribeDataCallBack() {
+        appStoreHomeViewModel.getProjectList()
+    }
 
+
+    // Bindviews
     private fun bindview() {
-        val datalayoutManager = LinearLayoutManager(context)
+        datalayoutManager = LinearLayoutManager(context)
         datalayoutManager.orientation = LinearLayoutManager.VERTICAL
         binding.root.Recycleview.layoutManager = datalayoutManager
         binding.swapRefreshLayout.isRefreshing = true
         binding.swapRefreshLayout.setOnRefreshListener(this)
-        setadapter(
-            Room.databaseBuilder(context!!, AppDB::class.java, "TELESTSRA")
-                .allowMainThreadQueries()
-                .build().appdeo().getallData()
-        )
+        adapter = DataAdapter(context!!, AppDB.getInstance(context!!).appdeo().getallData())
 
 
+        // Check Network
+        if (isNetwork(context!!)) {
+            if (AppDB.getInstance(context!!).appdeo().getallData().isEmpty()) {
+                appStoreHomeViewModel.getProjectList()
+            }
+        } else {
+            callToast(context!!.getString(R.string.networkMessage))
+            binding.swapRefreshLayout.isRefreshing = false
+        }
+
+        binding.Recycleview.adapter = adapter
+
+
+        //  Handel a Action bar Title
+        binding.Recycleview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                (activity as MainActivity).supportActionBar?.title =
+                    AppDB.getInstance(context!!).appdeo().getallData()
+                        .get(datalayoutManager.findFirstVisibleItemPosition()).title
+            }
+        })
     }
 
+
+    // Show toast notification
     private fun callToast(message: String) {
         val myToast = Toast.makeText(
             context,
@@ -97,16 +107,8 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         myToast.show()
     }
 
-    private fun setadapter(dataList: List<AppEntity>) {
-        binding.Recycleview.adapter =
-            DataAdapter(
-                context!!,
-                dataList
-            )
-        binding.swapRefreshLayout.isRefreshing = false
 
-    }
-
+    // Checking the Network
     fun isNetwork(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -114,18 +116,21 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         return networkInfo != null && networkInfo.isConnected
     }
 
+
+    // pull to Refresh
     override fun onRefresh() {
         if (isNetwork(context!!)) {
             subscribeDataCallBack()
         } else {
-
-            setadapter(
-                Room.databaseBuilder(context!!, AppDB::class.java, "TELESTSRA")
-                    .allowMainThreadQueries()
-                    .build().appdeo().getallData()
-            )
+            binding.Recycleview.adapter = adapter
+            binding.swapRefreshLayout.isRefreshing = false
             callToast(this.getString(R.string.networkMessage))
         }
+    }
+
+    override fun apistatus(b: List<AppEntity>) {
+        binding.swapRefreshLayout.isRefreshing = false
+        adapter.updateData(b)
     }
 
 

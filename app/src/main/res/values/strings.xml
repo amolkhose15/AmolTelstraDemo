@@ -3,4 +3,6 @@
     <string name="actionbarname">Telestra</string>
     <string name="implemtListener">must implement</string>
     <string name="networkMessage">Network Not Available</string>
+    <string name="telstra">TELESTSRA</string>
+    <string name="refresh">Refresh</string>
 </resources>
