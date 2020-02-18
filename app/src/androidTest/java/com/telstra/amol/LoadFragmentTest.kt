@@ -30,7 +30,7 @@ class LoadFragmentTest {
     }
 
     @Test
-    fun fra() {
+    fun fragment() {
         activty?.run {
             val fragment = MainFragment()
             supportFragmentManager.beginTransaction()
@@ -38,7 +38,7 @@ class LoadFragmentTest {
                 .commit()
             InstrumentationRegistry.getInstrumentation().waitForIdleSync()
             val swaprefrsh: SwipeRefreshLayout? =
-                fragment.view?.findViewById(R.id.refreshmenu)
+                fragment.view?.findViewById(R.id.swapRefreshLayout)
             if (swaprefrsh != null) {
                 print("TAG ----- $TAG ---> Test Case Done...")
             } else {

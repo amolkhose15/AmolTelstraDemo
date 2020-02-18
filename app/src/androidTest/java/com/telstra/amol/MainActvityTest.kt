@@ -12,9 +12,8 @@ import org.junit.runner.RunWith
 class MainActvityTest {
 
     @get:Rule
-    var actvityTest: ActivityTestRule<MainActivity> =
+ var actvityTest: ActivityTestRule<MainActivity> =
         ActivityTestRule(MainActivity::class.java)
-
     var mActivity: MainActivity? = null
 
     @Before
