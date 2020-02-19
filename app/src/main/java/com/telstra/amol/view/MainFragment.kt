@@ -35,15 +35,24 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.activity_main, container, false)
         appStoreHomeViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-
         binding.mainModel = appStoreHomeViewModel
         appStoreHomeViewModel.apistatus(this)
         appDao = AppDB.getInstance(context!!)
         bindview()
-        subscribeDataCallBack()
+
         return binding.root
     }
 
+
+    // to handle a orientation changes
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (savedInstanceState == null) {
+            subscribeDataCallBack()
+        } else {
+
+        }
+    }
     // Create  button in action bar for refresh data
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -53,7 +62,7 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
     //    Refresh data on click refresh Button
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item!!.itemId == R.id.refreshmenu)
-            bindview()
+            binding.swapRefreshLayout.isRefreshing = true
         subscribeDataCallBack()
         return super.onOptionsItemSelected(item)
 
@@ -98,7 +107,6 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
         })
     }
 
-
     // Show toast notification
     private fun callToast(message: String) {
         val myToast = Toast.makeText(
@@ -129,10 +137,11 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
         }
     }
 
-    override fun apistatus(updateDataList: List<AppEntity>, status: Boolean) {
+    override fun apiStatus(updateDataList: List<AppEntity>, status: Boolean) {
         if (updateDataList != null) {
             adapter.updateData(updateDataList)
         }
+
         binding.swapRefreshLayout.isRefreshing = false
 
     }

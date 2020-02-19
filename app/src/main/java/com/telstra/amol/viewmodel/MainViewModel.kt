@@ -19,7 +19,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     lateinit var apiResponse: APiResponse;
 
     interface APiResponse {
-        fun apistatus(
+        fun apiStatus(
             b: List<AppEntity>,
             b1: Boolean
         )
@@ -28,7 +28,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun apistatus(apiResponse: APiResponse) {
         this.apiResponse = apiResponse;
-
     }
 
     //    API Call and Return the data
@@ -50,7 +49,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     }
                 }
                 override fun onFailure(call: Call<ApiRespose>?, t: Throwable?) {
-                    apiResponse.apistatus(appDB.getallData(), false)
+                    apiResponse.apiStatus(appDB.getallData(), false)
                 }
             })
         return myList;
@@ -62,6 +61,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             } else {
             appDB.update(item)
         }
-        apiResponse.apistatus(appDB.getallData(), true)
+        apiResponse.apiStatus(appDB.getallData(), true)
     }
 }

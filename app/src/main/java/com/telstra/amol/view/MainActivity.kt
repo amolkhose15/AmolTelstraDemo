@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     // attached the Fragment
     private fun CallFragment() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.frgment, MainFragment()!!)
+        fragmentTransaction.add(R.id.frgment, MainFragment())
         fragmentTransaction.commit()
     }
 
