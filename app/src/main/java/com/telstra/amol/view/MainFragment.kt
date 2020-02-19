@@ -87,7 +87,6 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
 
         binding.Recycleview.adapter = adapter
 
-
         //  Handel a Action bar Title
         binding.Recycleview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -130,11 +129,11 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
         }
     }
 
-    override fun apistatus(b: List<AppEntity>) {
-        adapter.updateData(b)
+    override fun apistatus(updateDataList: List<AppEntity>, status: Boolean) {
+        if (updateDataList != null) {
+            adapter.updateData(updateDataList)
+        }
         binding.swapRefreshLayout.isRefreshing = false
 
     }
-
-
 }

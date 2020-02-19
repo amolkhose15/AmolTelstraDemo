@@ -19,7 +19,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     lateinit var apiResponse: APiResponse;
 
     interface APiResponse {
-        fun apistatus(b: List<AppEntity>)
+        fun apistatus(
+            b: List<AppEntity>,
+            b1: Boolean
+        )
 
     }
 
@@ -30,42 +33,35 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     //    API Call and Return the data
     fun getProjectList(): List<AppEntity> {
-
-
         APIClient.client.create(ApiInterface::class.java).getData()
             .enqueue(object : Callback<ApiRespose> {
                 override fun onResponse(call: Call<ApiRespose>, response: Response<ApiRespose>) {
-
-
-                    for (apidata in response.body()!!.getRows()!!) {
-                        myList.add(
-                            AppEntity(
-                                title = apidata!!.getTitle() ?: "",
-                                description = apidata!!.getDescription() ?: "",
-                                imageHref = apidata!!.getImageHref() ?: ""
+                    if (response.isSuccessful) {
+                        for (apidata in response.body()!!.getRows()!!) {
+                            myList.add(
+                                AppEntity(
+                                    title = apidata!!.getTitle() ?: "",
+                                    description = apidata!!.getDescription() ?: "",
+                                    imageHref = apidata!!.getImageHref() ?: ""
+                                )
                             )
-                        )
-
+                        }
+                        insertOrUpdate(myList)
                     }
-                    insertOrUpdate(myList)
-
                 }
-
                 override fun onFailure(call: Call<ApiRespose>?, t: Throwable?) {
-
-
+                    apiResponse.apistatus(appDB.getallData(), false)
                 }
             })
         return myList;
     }
 
     fun insertOrUpdate(item: List<AppEntity>) {
-
         if (appDB.getallData().isEmpty()) {
             appDB.insertData(item)
             } else {
             appDB.update(item)
         }
-        apiResponse.apistatus(appDB.getallData())
+        apiResponse.apistatus(appDB.getallData(), true)
     }
 }

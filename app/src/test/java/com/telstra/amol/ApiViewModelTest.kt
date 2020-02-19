@@ -5,15 +5,15 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.telstra.amolassignmenttestra.utils.APIClient
 import com.telstra.amolassignmenttestra.utils.ApiInterface
-import org.junit.Assert
+import junit.framework.TestCase.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
+
 
 @RunWith(MockitoJUnitRunner.Silent::class)
 class ApiViewModelTest {
@@ -29,6 +29,7 @@ class ApiViewModelTest {
     @Mock
     lateinit var lifecycle: Lifecycle
 
+
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
@@ -41,8 +42,9 @@ class ApiViewModelTest {
 
     @Test
     fun checkNull() {
-        `when`(apiClient.getData()).thenReturn(null)
-        Assert.assertNotNull(apiClient.getData())
+        assertNotNull(apiClient.getData())
+
     }
+
 
 }

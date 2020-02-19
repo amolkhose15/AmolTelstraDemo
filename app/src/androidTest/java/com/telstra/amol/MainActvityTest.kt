@@ -5,7 +5,11 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.rule.ActivityTestRule
 import com.telstra.amolassignmenttestra.R
 import com.telstra.amolassignmenttestra.view.MainActivity
-import org.junit.*
+import junit.framework.TestCase.assertNotNull
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4ClassRunner::class)
@@ -24,7 +28,7 @@ class MainActvityTest {
     @Test
     fun testlaunch() {
         var view: View = mActivity!!.findViewById(R.id.frgment)
-        Assert.assertNotNull(view)
+        assertNotNull(view)
     }
 
     @After
