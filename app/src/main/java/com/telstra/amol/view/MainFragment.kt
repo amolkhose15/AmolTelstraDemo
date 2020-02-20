@@ -2,6 +2,8 @@ package com.telstra.amolassignmenttestra.view
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -36,7 +38,7 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
         binding = DataBindingUtil.inflate(inflater, R.layout.activity_main, container, false)
         appStoreHomeViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         binding.mainModel = appStoreHomeViewModel
-        appStoreHomeViewModel.apistatus(this)
+        appStoreHomeViewModel.apiStatus(this)
         appDao = AppDB.getInstance(context!!)
         bindview()
 
@@ -54,21 +56,21 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
         }
     }
     // Create  button in action bar for refresh data
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater!!.inflate(R.menu.menu, menu);
+        inflater.inflate(R.menu.menu, menu)
     }
 
     //    Refresh data on click refresh Button
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item!!.itemId == R.id.refreshmenu)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.refreshmenu)
             binding.swapRefreshLayout.isRefreshing = true
         subscribeDataCallBack()
         return super.onOptionsItemSelected(item)
-
     }
 
-    // Call API and update the latest data
+
+    // Call API
     private fun subscribeDataCallBack() {
         appStoreHomeViewModel.getProjectList()
     }
@@ -119,11 +121,34 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
 
 
     // Checking the Network
-    fun isNetwork(context: Context): Boolean {
+
+    @Suppress("DEPRECATION")
+    private fun isNetwork(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connectivityManager.activeNetworkInfo
-        return networkInfo != null && networkInfo.isConnected
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                when {
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                        return true
+                    }
+                }
+            }
+        } else {
+            val activeNetworkInfo = connectivityManager.activeNetworkInfo
+            if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
+                return true
+            }
+        }
+        return false
     }
 
 
@@ -137,10 +162,8 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, MainViewM
         }
     }
 
-    override fun apiStatus(updateDataList: List<AppEntity>, status: Boolean) {
-        if (updateDataList != null) {
-            adapter.updateData(updateDataList)
-        }
+    override fun apiStatus(datList: List<AppEntity>, status: Boolean) {
+        adapter.updateData(datList)
 
         binding.swapRefreshLayout.isRefreshing = false
 

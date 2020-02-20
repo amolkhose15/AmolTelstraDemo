@@ -20,5 +20,4 @@ class MainActivity : AppCompatActivity() {
         fragmentTransaction.add(R.id.frgment, MainFragment())
         fragmentTransaction.commit()
     }
-
 }

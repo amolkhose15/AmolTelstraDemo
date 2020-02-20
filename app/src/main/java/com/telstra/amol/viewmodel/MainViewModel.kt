@@ -19,14 +19,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     lateinit var apiResponse: APiResponse;
 
     interface APiResponse {
-        fun apiStatus(
-            b: List<AppEntity>,
-            b1: Boolean
-        )
+        fun apiStatus(datList: List<AppEntity>, status: Boolean )
 
     }
 
-    fun apistatus(apiResponse: APiResponse) {
+    fun apiStatus(apiResponse: APiResponse) {
         this.apiResponse = apiResponse;
     }
 
@@ -40,8 +37,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             myList.add(
                                 AppEntity(
                                     title = apidata!!.getTitle() ?: "",
-                                    description = apidata!!.getDescription() ?: "",
-                                    imageHref = apidata!!.getImageHref() ?: ""
+                                    description = apidata.getDescription() ?: "",
+                                    imageHref = apidata.getImageHref() ?: ""
                                 )
                             )
                         }
